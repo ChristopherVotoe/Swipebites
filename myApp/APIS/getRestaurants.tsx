@@ -7,7 +7,7 @@ export const getNearbyRestaurants = async (coords: LocationObjectCoords) => {
 
   try {
     const response = await fetch(
-      `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&radius=3000&limit=3`,
+      `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${latitude}&longitude=${longitude}&radius=3000&limit=20`,
       {
         method: 'GET',
         headers: {

@@ -103,7 +103,7 @@ export default function SwipeScreen() {
                   if (!chatInput.trim()) return;
                   setShowMatch(false);
                   router.push({
-                    pathname: '/chatbox',
+                    pathname: '/(tabs)/messageScreen',
                     params: {
                       restaurant: JSON.stringify(matchedRestaurant),
                       userMessage: chatInput,
