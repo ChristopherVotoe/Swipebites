@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, Image } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -27,17 +27,51 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
+        name="mainPage"
+        options={{
+          title: '',
+          tabBarLabel: () => null,
+          tabBarIcon: ({ focused }) => <Image
+          source={
+          focused
+            ? require('@/assets/images/redBanner.png')
+            : require('@/assets/images/banner.png')
+        }
+        style={{
+          width: 28,
+          height: 28,
+          resizeMode: 'contain',
+        }}
+      />
+        }}
+      />
+
+      
+      <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
+
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: '',
+          tabBarLabel: () => null,
+          tabBarIcon: ({ focused }) => <Image
+          source={
+          focused
+            ? require('@/assets/images/purpleExplore.png')
+            : require('@/assets/images/grayExplore.png')
+        }
+        style={{
+          width: 28,
+          height: 28,
+          resizeMode: 'contain',
+        }}
+      />
         }}
       />
     </Tabs>
