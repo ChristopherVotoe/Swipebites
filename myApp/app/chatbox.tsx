@@ -58,13 +58,18 @@ User's message: ${userMsg}
   return (
     <View style={styles.container}>
       <ScrollView style={styles.messages} contentContainerStyle={{padding: 10}}>
-        {messages.map((msg, idx) => (
-          <Text key={idx} style={msg.from === 'user' ? styles.user : styles.bot}>
-            {msg.from === 'user' ? 'You: ' : 'Mr.Tasty: '}
-            {msg.text}
-          </Text>
-        ))}
-      </ScrollView>
+       {messages.map((msg, idx) => (
+      <Text key={idx} style={msg.from === 'user' ? styles.user : styles.bot}>
+       {msg.from === 'user' ? 'You: ' : 'Mr.Tasty: '}
+       {msg.text}
+    </Text>
+  ))}
+  {loading && (
+    <View style={styles.botThinkingBubble}>
+      <Text style={{ color: '#888' }}>Mr.Tasty is thinking...</Text>
+    </View>
+  )}
+</ScrollView>
       <View style={styles.inputRow}>
         <TextInput
           style={styles.input}
@@ -81,6 +86,14 @@ User's message: ${userMsg}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+  botThinkingBubble: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#f5f5f5',
+    marginVertical: 2,
+    padding: 8,
+    borderRadius: 8,
+    opacity: 0.7,
+  },
   messages: { flex: 1 },
   user: { alignSelf: 'flex-end', backgroundColor: '#e0e0e0', marginVertical: 2, padding: 8, borderRadius: 8 },
   bot: { alignSelf: 'flex-start', backgroundColor: '#f5f5f5', marginVertical: 2, padding: 8, borderRadius: 8 },
