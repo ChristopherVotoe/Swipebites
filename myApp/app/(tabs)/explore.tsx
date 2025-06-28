@@ -1,110 +1,201 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Dimensions,
+  SafeAreaView,
+  Image,
+} from 'react-native';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+// Get screen width/height
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-export default function TabTwoScreen() {
+export default function ExploreScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Verified Card */}
+        <View style={styles.card}>
+          {/* LOGO IMAGE */}
+          <Image
+            source={require('@/assets/images/sb.png')}
+            style={styles.logo}
+          />
+
+          {/* BANNER IMAGE */}
+          <View style={styles.bannerContainer}>
+            <Image 
+              source={require('@/assets/images/verifiedimg.png')} 
+              style={styles.bannerImage} 
+            />
+            <View style={styles.bannerDarkOverlay} />
+            <View style={styles.bannerOverlay}>
+              <Text style={styles.bannerTitle}>Verified</Text>
+              <Text style={styles.bannerSubtitle}>See Only Verified Restaurants</Text>
+              <Pressable style={styles.button}>
+                <Text style={styles.buttonText}>TRY NOW</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+
+        {/* Section */}
+        <Text style={styles.sectionTitle}>Welcome to Explore</Text>
+        <Text style={styles.subTitle}>My Vibe...</Text>
+
+        {/* Vibe Cards */}
+        <View style={styles.vibeRow}>
+          <View style={styles.vibeCard}>
+            <Image
+              source={require('@/assets/images/mangia.png')}
+              style={styles.vibeImage}
+            />
+            <View style={styles.vibeDarkOverlay} />
+            <Text style={styles.vibeText}>Hidden Gems</Text>
+          </View>
+
+          <View style={styles.vibeCard}>
+            <Image
+              source={require('@/assets/images/nightowlimg.png')}
+              style={styles.vibeImage}
+            />
+            <View style={styles.vibeDarkOverlay} />
+            <Text style={styles.vibeText}>Late Night Bites</Text>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  safe: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  titleContainer: {
+  container: {
+    padding: screenWidth * 0.04,
+    paddingBottom: screenHeight * 0.1,
+    backgroundColor: '#fff',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 1,
+    marginBottom: screenHeight * 0.04,
+  },
+  logo: {
+    width: screenWidth * 0.35,
+    height: 40,
+    resizeMode: 'contain',
+    marginBottom: 12,
+  },
+  bannerContainer: {
+    position: 'relative',
+    borderRadius: 16,
+    overflow: 'hidden',
+  
+    // Apple-style depth (iOS)
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+  
+    // Android depth
+    elevation: 10,
+  },
+  bannerImage: {
+    width: '100%',
+    height: 250,
+    backgroundColor: '#FFBBAA',
+    borderRadius: 16,
+  },
+  bannerDarkOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderRadius: 16,
+  },
+  bannerOverlay: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+  },
+  bannerTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  bannerSubtitle: {
+    color: '#fff',
+    fontSize: 14,
+    marginVertical: 4,
+  },
+  button: {
+    backgroundColor: '#fff',
+    paddingVertical: 4,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    marginTop: 2,
+    alignSelf: 'flex-start',
+  },
+  buttonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'thin',
+    marginBottom: 4,
+    color: '#000',
+  },
+  subTitle: {
+    fontSize: 14,
+    color: '#444',
+    marginBottom: 16,
+  },
+  vibeRow: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  vibeCard: {
+    width: '48%',
+    position: 'relative',
+    borderRadius: 16,
+    backgroundColor: 'white',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  vibeImage: {
+    width: '100%',
+    height: screenHeight * 0.25,
+    resizeMode: 'cover',
+  },
+  vibeDarkOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  vibeText: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
