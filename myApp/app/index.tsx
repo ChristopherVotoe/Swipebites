@@ -9,7 +9,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.replace('/(tabs)/mock'); // Navigate to mock tab after 2 seconds
+      router.push('/(tabs)/mainPage'); 
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
