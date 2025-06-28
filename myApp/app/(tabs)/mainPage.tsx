@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, Modal, Pressable } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, Modal, Pressable, TextInput } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { getNearbyRestaurants } from '@/APIS/getRestaurants';
 import type { LocationObjectCoords } from 'expo-location';
@@ -12,6 +12,7 @@ export default function SwipeScreen() {
   const [showMatch, setShowMatch] = useState(false);
   const [matchedRestaurant, setMatchedRestaurant] = useState<any>(null);
   const [cards, setCards] = useState<any[]>([]);
+  const [chatInput, setChatInput] = useState('');
   const router = useRouter();
 
   const mockCoords: LocationObjectCoords = {
@@ -77,34 +78,54 @@ export default function SwipeScreen() {
       </View>
 
       <Modal visible={showMatch} transparent animationType="fade">
-  <View style={styles.fullScreenModal}>
-    {matchedRestaurant?.image && (
-      <Image
-        source={{ uri: matchedRestaurant.image }}
-        style={styles.matchBackgroundImage}
-        blurRadius={3}
-      />
-    )}
+        <View style={styles.fullScreenModal}>
+          {matchedRestaurant?.image && (
+            <Image
+              source={{ uri: matchedRestaurant.image }}
+              style={styles.matchBackgroundImage}
+              blurRadius={3}
+            />
+          )}
 
-    <View style={styles.overlayContent}>
-      <Text style={styles.matchGradientText}>IT’S A</Text>
-      <Text style={styles.matchMainMatch}>MATCH!</Text>
+          <View style={styles.overlayContent}>
+            <Text style={styles.matchGradientText}>IT’S A</Text>
+            <Text style={styles.matchMainMatch}>MATCH!</Text>
 
+            <View style={styles.messageBox}>
+              <TextInput
+                style={styles.placeholder}
+                placeholder="Say something nice"
+                value={chatInput}
+                onChangeText={setChatInput}
+              />
+              <Pressable
+                onPress={() => {
+                  if (!chatInput.trim()) return;
+                  setShowMatch(false);
+                  router.push({
+                    pathname: '/chatbox',
+                    params: {
+                      restaurant: JSON.stringify(matchedRestaurant),
+                      userMessage: chatInput,
+                    },
+                  });
+                  setChatInput('');
+                }}
+              >
+                <Text style={styles.sendButton}>Send</Text>
+              </Pressable>
+            </View>
 
-      <View style={styles.messageBox}>
-        <Text style={styles.placeholder}>Say something nice</Text>
-        <Text style={styles.sendButton}>Send</Text>
-      </View>
-
-      <Pressable style={styles.dismissArea} onPress={() => setShowMatch(false)}>
-        <Image source={require('@/assets/images/xbutton.png')} style={styles.dismissIcon} />
-      </Pressable>
-    </View>
-  </View>
-</Modal>
+            <Pressable style={styles.dismissArea} onPress={() => setShowMatch(false)}>
+              <Image source={require('@/assets/images/xbutton.png')} style={styles.dismissIcon} />
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -262,7 +283,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
-    borderRadius: 10,
     paddingHorizontal: 15,
     paddingVertical: 20,
     marginTop: 200,
@@ -271,17 +291,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
-    elevation: 15, // for Android
+    elevation: 15, 
+    color: "#000"
   },
   
   placeholder: {
-    color: '#888',
+    color: '#000',
     fontSize: 16,
     flex: 1,
   },
   
   sendButton: {
-    color: '#888',
+    color: '#000',
     fontWeight: '600',
     fontSize: 16,
   },

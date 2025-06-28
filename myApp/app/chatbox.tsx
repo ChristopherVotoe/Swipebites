@@ -1,24 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TextInput, Button, ScrollView, Text, StyleSheet } from 'react-native';
 import { getGeminiResponse } from '@/APIS/googleAI';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function ChatBox() {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<{from: 'user' | 'Mr.Tasty', text: string}[]>([]);
-  const [loading, setLoading] = useState(false);
-
+  const params = useLocalSearchParams();
   
-  const restaurant = {
-    name: "Chilli's",
-    price: "$",
-  };
+  const initialRestaurant = JSON.parse(params.restaurant as string);
+  const initialUserMessage = params.userMessage as string | undefined;
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    setMessages([...messages, { from: 'user', text: input }]);
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<{from: 'user' | 'Mr.Tasty', text: string}[]>(
+    initialUserMessage ? [{ from: 'user', text: initialUserMessage }] : []
+  );
+  const [loading, setLoading] = useState(false);
+  const [restaurant] = useState(initialRestaurant);
+
+  useEffect(() => {
+    // If we have an initial user message, immediately get a bot reply
+    if (initialUserMessage) {
+      handleBotReply(initialUserMessage);
+    }
+    
+  }, []);
+
+  const handleBotReply = async (userMsg: string) => {
     setLoading(true);
     try {
-      // Build the prompt using your template and restaurant info
       const prompt = `
 You are a charming, witty assistant who’s trying to convince someone to go to a restaurant. Here's the info:
 
@@ -26,10 +34,9 @@ Name: ${restaurant.name}
 Price: ${restaurant.price}
 
 Write a short, flirty, and persuasive message that makes the user want to go tonight.
-Keep it under 50 words and use fun, casual language and base it on the food of the restaurant. If the user says no, try to convinc them
+Keep it under 50 words and use fun, casual language and base it on the food of the restaurant.
 
-
-User's message: ${input}
+User's message: ${userMsg}
       `.trim();
 
       const response = await getGeminiResponse(prompt);
@@ -38,8 +45,14 @@ User's message: ${input}
     } catch (e) {
       setMessages(msgs => [...msgs, { from: 'Mr.Tasty', text: 'Error getting response.' }]);
     }
-    setInput('');
     setLoading(false);
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+    setMessages(msgs => [...msgs, { from: 'user', text: input }]);
+    await handleBotReply(input);
+    setInput('');
   };
 
   return (
