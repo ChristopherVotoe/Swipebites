@@ -21,7 +21,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack
-        screenOptions={{ headerShown: false, animation: 'slide_from_bottom',animationDuration: 3000 }}
+        screenOptions={{ headerShown: false, animation: 'fade' }}
         initialRouteName="index" // Always start at index
       >
         <Stack.Screen name="index" />
