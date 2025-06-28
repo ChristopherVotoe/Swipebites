@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, Modal, Pressable } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { getNearbyRestaurants } from '@/APIS/getRestaurants';
 import type { LocationObjectCoords } from 'expo-location';
+import { useRouter } from 'expo-router';
+
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function SwipeScreen() {
+  const [showMatch, setShowMatch] = useState(false);
+  const [matchedRestaurant, setMatchedRestaurant] = useState<any>(null);
   const [cards, setCards] = useState<any[]>([]);
+  const router = useRouter();
 
   const mockCoords: LocationObjectCoords = {
     latitude: 28.6024,
@@ -46,10 +51,43 @@ export default function SwipeScreen() {
           cardIndex={0}
           animateCardOpacity
           verticalSwipe={false}
+          onSwipedRight={(cardIndex) => {
+          const matched = cards[cardIndex];
+          setMatchedRestaurant(matched);
+          setShowMatch(true);
+        }}
         />
       ) : (
         <Text>Loading restaurants...</Text>
       )}
+
+    <Modal
+        visible={showMatch}
+        transparent
+        animationType="fade"
+    >
+    <View style={styles.modalBackground}>
+        <View style={styles.matchModal}>
+        <Text style={styles.matchText}>💘 It's a Match!</Text>
+        <Text style={styles.matchTextSmall}>
+            You matched with {matchedRestaurant?.name}
+        </Text>
+        <Pressable onPress={() => alert("awesomeness (i dont want to remove this dummy code)")}>
+            <Text style={styles.matchButton} onPress={() => {
+                setShowMatch(false);    
+                router.push('/messages'); 
+                }}
+                >
+                Send a chat
+            </Text>
+        </Pressable>
+        <Pressable onPress={() => setShowMatch(false)}>
+            <Text style={styles.dismissButton}>Keep Swiping</Text>
+        </Pressable>
+        </View>
+    </View>
+    </Modal>
+
     </View>
   );
 }
@@ -88,5 +126,47 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 16,
     color: '#666',
-  },
+    },
+    matchModal: {
+    position: 'absolute',
+    top: '30%',
+    left: '10%',
+    right: '10%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 10,
+    elevation: 10,
+    },
+    matchText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#d6336c',
+    marginBottom: 10,
+    },
+    matchTextSmall: {
+    fontSize: 16,
+    marginBottom: 20,
+    color: '#555',
+    },
+    matchButton: {
+    fontSize: 18,
+    color: '#0077b6',
+    marginBottom: 10,
+    },
+    dismissButton: {
+    fontSize: 16,
+    color: '#aaa',
+    },
+    modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    },
+
 });
