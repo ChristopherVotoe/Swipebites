@@ -36,7 +36,7 @@ export default function TabLayout() {
           source={
           focused
             ? require('@/assets/images/redBanner.png')
-            : require('@/assets/images/banner.png')
+            : require('@/assets/images/banner1.png')
         }
         style={{
           width: 28,
@@ -44,19 +44,6 @@ export default function TabLayout() {
           resizeMode: 'contain',
         }}
       />
-        }}
-      />
-
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: '',
-          tabBarLabel: () => null,
-          tabBarIcon: () => (<Image
-          source={require('@/assets/images/transparent.png')} // a 1x1 transparent PNG
-          style={{ width: 0, height: 0 }}
-          />
-          )
         }}
       />
 
@@ -68,8 +55,8 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => <Image
           source={
           focused
-            ? require('@/assets/images/purpleExplore.png')
-            : require('@/assets/images/grayExplore.png')
+            ? require('@/assets/images/purpleExplore2.png')
+            : require('@/assets/images/grayExplore2.png')
         }
         style={{
           width: 28,
@@ -81,15 +68,55 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="messages"
+        name="messageScreen"
         options={{
           title: '',
           tabBarLabel: () => null,
           tabBarIcon: ({ focused }) => <Image
           source={
           focused
-            ? require('@/assets/images/blueChat.png')
-            : require('@/assets/images/chat.png')
+            ? require('@/assets/images/blueChat3.png')
+            : require('@/assets/images/chat2.png')
+        }
+        style={{
+          width: 28,
+          height: 28,
+          resizeMode: 'contain',
+        }}
+      />
+        }}
+      />
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: '',
+          tabBarLabel: () => null,
+          tabBarIcon: ({ focused }) => <Image
+          source={
+          focused
+            ? require('@/assets/images/profile1.png')
+            : require('@/assets/images/profile.png')
+        }
+        style={{
+          width: 28,
+          height: 28,
+          resizeMode: 'contain',
+        }}
+      />
+        }}
+      />
+
+      <Tabs.Screen
+        name="savedPage"
+        options={{
+          title: '',
+          tabBarLabel: () => null,
+          tabBarIcon: ({ focused }) => <Image
+          source={
+          focused
+            ? require('@/assets/images/redBookmark.png')
+            : require('@/assets/images/bookmarkIcon1.png')
         }
         style={{
           width: 28,
