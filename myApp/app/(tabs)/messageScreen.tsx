@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, ScrollView, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Button, ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { getGeminiResponse } from '@/APIS/googleAI';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function ChatBox() {
   const params = useLocalSearchParams();
-  
   const initialRestaurant = JSON.parse(params.restaurant as string);
   const initialUserMessage = params.userMessage as string | undefined;
 
@@ -15,13 +14,12 @@ export default function ChatBox() {
   );
   const [loading, setLoading] = useState(false);
   const [restaurant] = useState(initialRestaurant);
+  const [minimized, setMinimized] = useState(false);
 
   useEffect(() => {
-    // If we have an initial user message, immediately get a bot reply
     if (initialUserMessage) {
       handleBotReply(initialUserMessage);
     }
-    
   }, []);
 
   const handleBotReply = async (userMsg: string) => {
@@ -31,7 +29,8 @@ export default function ChatBox() {
 You are a charming, witty assistant who’s trying to convince someone to go to a restaurant. Here's the info:
 
 Name: ${restaurant.name}
-Price: ${restaurant.price}
+Location: ${restaurant.location || ''}
+Price: ${restaurant.price || ''}
 
 Write a short, flirty, and persuasive message that makes the user want to go tonight.
 Keep it under 50 words and use fun, casual language and base it on the food of the restaurant.
@@ -55,21 +54,33 @@ User's message: ${userMsg}
     setInput('');
   };
 
+  if (minimized) {
+    return (
+      <View style={styles.cardContainer}>
+        <TouchableOpacity style={styles.card} onPress={() => setMinimized(false)}>
+          <Text style={styles.cardTitle}>{restaurant.name}</Text>
+          <Text style={styles.cardLocation}>{restaurant.location || 'No location'}</Text>
+          <Text style={styles.cardHint}>(Tap to open chat)</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.messages} contentContainerStyle={{padding: 10}}>
-       {messages.map((msg, idx) => (
-      <Text key={idx} style={msg.from === 'user' ? styles.user : styles.bot}>
-       {msg.from === 'user' ? 'You: ' : 'Mr.Tasty: '}
-       {msg.text}
-    </Text>
-  ))}
-  {loading && (
-    <View style={styles.botThinkingBubble}>
-      <Text style={{ color: '#888' }}>Mr.Tasty is thinking...</Text>
-    </View>
-  )}
-</ScrollView>
+        {messages.map((msg, idx) => (
+          <Text key={idx} style={msg.from === 'user' ? styles.user : styles.bot}>
+            {msg.from === 'user' ? 'You: ' : 'Mr.Tasty: '}
+            {msg.text}
+          </Text>
+        ))}
+        {loading && (
+          <View style={styles.botThinkingBubble}>
+            <Text style={{ color: '#888' }}>Mr.Tasty is thinking...</Text>
+          </View>
+        )}
+      </ScrollView>
       <View style={styles.inputRow}>
         <TextInput
           style={styles.input}
@@ -79,6 +90,7 @@ User's message: ${userMsg}
           editable={!loading}
         />
         <Button title="Send" onPress={sendMessage} disabled={loading || !input.trim()} />
+        <Button title="Minimize" onPress={() => setMinimized(true)} />
       </View>
     </View>
   );
@@ -99,4 +111,32 @@ const styles = StyleSheet.create({
   bot: { alignSelf: 'flex-start', backgroundColor: '#f5f5f5', marginVertical: 2, padding: 8, borderRadius: 8 },
   inputRow: { flexDirection: 'row', padding: 10, borderTopWidth: 1, borderColor: '#eee' },
   input: { flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8, marginRight: 8 },
+  cardContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  card: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+    elevation: 3,
+    width: '80%',
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  cardLocation: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 8,
+  },
+  cardHint: {
+    fontSize: 12,
+    color: '#aaa',
+  },
 });
