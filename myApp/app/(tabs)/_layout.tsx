@@ -26,6 +26,7 @@ export default function TabLayout() {
           default: {},
         }),
       }}>
+
       <Tabs.Screen
         name="mainPage"
         options={{
@@ -46,12 +47,16 @@ export default function TabLayout() {
         }}
       />
 
-      
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: '',
+          tabBarLabel: () => null,
+          tabBarIcon: () => (<Image
+          source={require('@/assets/images/transparent.png')} // a 1x1 transparent PNG
+          style={{ width: 0, height: 0 }}
+          />
+          )
         }}
       />
 
@@ -74,6 +79,27 @@ export default function TabLayout() {
       />
         }}
       />
+
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: '',
+          tabBarLabel: () => null,
+          tabBarIcon: ({ focused }) => <Image
+          source={
+          focused
+            ? require('@/assets/images/blueChat.png')
+            : require('@/assets/images/chat.png')
+        }
+        style={{
+          width: 28,
+          height: 28,
+          resizeMode: 'contain',
+        }}
+      />
+        }}
+      />
+
     </Tabs>
   );
 }

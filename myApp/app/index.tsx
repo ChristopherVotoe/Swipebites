@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
+
 export default function HomeScreen() {
   const router = useRouter();
 
