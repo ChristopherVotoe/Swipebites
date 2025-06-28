@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop:50,
-    paddingBottom: 90,
+    paddingTop: 10,
+    paddingBottom: 30,
   },
   logo: {
     width: 180,
