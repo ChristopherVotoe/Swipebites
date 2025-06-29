@@ -3,13 +3,14 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
-import { SavedProvider } from '../app/context/SavedContext';
+import { SavedProvider } from './context/SavedContext';
 import { useEffect, useState } from 'react';
-
+import { LogBox } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 
 export default function RootLayout() {
+  LogBox.ignoreAllLogs(true);
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),

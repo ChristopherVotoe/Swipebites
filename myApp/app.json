@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "myApp",
-    "slug": "myApp",
+    "name": "swipebites",
+    "slug": "swipebites",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/fireyuh.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
