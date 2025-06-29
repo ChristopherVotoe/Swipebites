@@ -5,8 +5,18 @@ import { useLocalSearchParams } from 'expo-router';
 
 export default function ChatBox() {
   const params = useLocalSearchParams();
-  const initialRestaurant = JSON.parse(params.restaurant as string);
+  // Only parse if restaurant param exists
+  const initialRestaurant = params.restaurant ? JSON.parse(params.restaurant as string) : null;
   const initialUserMessage = params.userMessage as string | undefined;
+
+  // If no restaurant, show placeholder and return early
+  if (!initialRestaurant) {
+    return (
+      <View style={styles.placeholderContainer}>
+        <Text style={styles.placeholderText}>No conversations recorded</Text>
+      </View>
+    );
+  }
 
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<{from: 'user' | 'Mr.Tasty', text: string}[]>(
@@ -20,6 +30,7 @@ export default function ChatBox() {
     if (initialUserMessage) {
       handleBotReply(initialUserMessage);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleBotReply = async (userMsg: string) => {
@@ -29,8 +40,6 @@ export default function ChatBox() {
 You are a charming, witty assistant who’s trying to convince someone to go to a restaurant. Here's the info:
 
 Name: ${restaurant.name}
-Location: ${restaurant.location || ''}
-Price: ${restaurant.price || ''}
 
 Write a short, flirty, and persuasive message that makes the user want to go tonight.
 Keep it under 50 words and use fun, casual language and base it on the food of the restaurant.
@@ -54,6 +63,26 @@ User's message: ${userMsg}
     setInput('');
   };
 
+  // Show placeholder until the first user message is sent
+  if (messages.length === 0) {
+    return (
+      <View style={styles.placeholderContainer}>
+        <Text style={styles.placeholderText}>No conversations recorded</Text>
+        <View style={styles.inputRow}>
+          <TextInput
+            style={styles.input}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Type your message..."
+            editable={!loading}
+          />
+          <Button title="Send" onPress={sendMessage} disabled={loading || !input.trim()} />
+        </View>
+      </View>
+    );
+  }
+
+  // Show minimized card if minimized
   if (minimized) {
     return (
       <View style={styles.cardContainer}>
@@ -66,6 +95,7 @@ User's message: ${userMsg}
     );
   }
 
+  // Show chat UI
   return (
     <View style={styles.container}>
       <ScrollView style={styles.messages} contentContainerStyle={{padding: 10}}>
@@ -98,6 +128,18 @@ User's message: ${userMsg}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+  placeholderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  placeholderText: {
+    color: '#aaa',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
   botThinkingBubble: {
     alignSelf: 'flex-start',
     backgroundColor: '#f5f5f5',
