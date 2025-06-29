@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, ScrollView, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import {
+  View, TextInput, Button, ScrollView, Text, StyleSheet,
+  TouchableOpacity, Image, SafeAreaView, KeyboardAvoidingView, Platform
+} from 'react-native';
 import { getGeminiResponse } from '@/APIS/googleAI';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -60,24 +63,6 @@ User's message: ${userMsg}
     setInput('');
   };
 
-  if (messages.length === 0) {
-    return (
-      <View style={styles.placeholderContainer}>
-        <Text style={styles.placeholderText}>No conversations recorded</Text>
-        <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
-            value={input}
-            onChangeText={setInput}
-            placeholder="Type your message..."
-            editable={!loading}
-          />
-          <Button title="Send" onPress={sendMessage} disabled={loading || !input.trim()} />
-        </View>
-      </View>
-    );
-  }
-
   if (minimized) {
     return (
       <View style={styles.cardContainer}>
@@ -92,51 +77,53 @@ User's message: ${userMsg}
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.topHeader}>
-        <Image source={require('@/assets/images/finallogo.png')} style={styles.topLogo} />
-      </View>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={styles.topHeader}>
+          <Image source={require('@/assets/images/finallogo.png')} style={styles.topLogo} />
+        </View>
 
-      <View style={styles.headerCenter}>
-        <Image source={{ uri: restaurant.image }} style={styles.restaurantImage} />
-        <Text style={styles.restaurantName}>{restaurant.name}</Text>
-      </View>
+        <View style={styles.headerCenter}>
+          <Image source={{ uri: restaurant.image }} style={styles.restaurantImage} />
+          <Text style={styles.restaurantName}>{restaurant.name}</Text>
+        </View>
 
-      <View style={styles.separatorLine} />
+        <View style={styles.separatorLine} />
 
-      <ScrollView style={styles.messages} contentContainerStyle={{ padding: 10 }}>
-        {messages.map((msg, idx) => (
-          <View key={idx} style={msg.from === 'user' ? styles.userBubbleWrapper : styles.botMessageContainer}>
-            {msg.from === 'Mr.Tasty' && (
-              <Text style={styles.botName}>{restaurant.name}</Text>
-            )}
-            <Text style={msg.from === 'user' ? styles.userBubble : styles.botBubble}>
-              {msg.text}
-            </Text>
-          </View>
-        ))}
-        {loading && (
-          <View style={styles.botBubbleWrapper}>
-            <Text style={styles.botName}>{restaurant.name}</Text>
-            <View style={styles.botThinkingBubble}>
-              <Text style={{ color: '#888' }}>Mr.Tasty is thinking...</Text>
+        <ScrollView style={styles.messages} contentContainerStyle={{ padding: 10 }}>
+          {messages.map((msg, idx) => (
+            <View key={idx} style={msg.from === 'user' ? styles.userBubbleWrapper : styles.botMessageContainer}>
+              {msg.from === 'Mr.Tasty' && <Text style={styles.botName}>{restaurant.name}</Text>}
+              <Text style={msg.from === 'user' ? styles.userBubble : styles.botBubble}>{msg.text}</Text>
             </View>
-          </View>
-        )}
-      </ScrollView>
+          ))}
+          {loading && (
+            <View style={styles.botBubbleWrapper}>
+              <Text style={styles.botName}>{restaurant.name}</Text>
+              <View style={styles.botThinkingBubble}>
+                <Text style={{ color: '#888' }}>Mr.Tasty is thinking...</Text>
+              </View>
+            </View>
+          )}
+        </ScrollView>
 
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          value={input}
-          onChangeText={setInput}
-          placeholder="Type your message..."
-          editable={!loading}
-        />
-        <Button title="Send" onPress={sendMessage} disabled={loading || !input.trim()} />
-        <TouchableOpacity onPress={() => setMinimized(true)} style={styles.minimizeButton}>
-          <Text style={styles.minimizeText}>MINIMIZE</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.inputWrapper}>
+          <View style={styles.inputRow}>
+            <TextInput
+              style={styles.input}
+              value={input}
+              onChangeText={setInput}
+              placeholder="Type your message..."
+              editable={!loading}
+            />
+            <TouchableOpacity onPress={sendMessage} disabled={loading || !input.trim()} style={styles.sendButton}>
+              <Text style={styles.sendText}>Send</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setMinimized(true)} style={styles.minimizeButton}>
+              <Text style={styles.minimizeText}>Minimize</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -178,35 +165,51 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 4,
   },
-  placeholderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  placeholderText: {
-    color: '#aaa',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 24,
-  },
   messages: {
     flex: 1,
   },
+  inputWrapper: {
+    paddingBottom: 16,
+    backgroundColor: '#fff',
+    marginBottom: 35, // floats above tab/footer
+  },
   inputRow: {
     flexDirection: 'row',
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: '#eee',
     alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 6,
   },
   input: {
     flex: 1,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
-    padding: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     marginRight: 8,
+  },
+  sendButton: {
+    backgroundColor: '#f45d48',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+  },
+  sendText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  minimizeButton: {
+    marginLeft: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: '#f45d48',
+    borderRadius: 6,
+  },
+  minimizeText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 12,
   },
   userBubbleWrapper: {
     alignSelf: 'flex-end',
@@ -260,17 +263,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     opacity: 0.7,
   },
-  minimizeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#f45d48',
-    borderRadius: 6,
-    marginLeft: 4,
+  placeholderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  minimizeText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 12,
+  placeholderText: {
+    color: '#aaa',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 24,
   },
   cardContainer: {
     flex: 1,
