@@ -133,12 +133,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 10,
+    paddingTop: 20,
     paddingBottom: 30,
   },
   logo: {
     width: 180,
-    height: 90,
+    height: 150,
     resizeMode: 'contain',
   },
   card: {
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   },
   buttonIcon: {
     width: 70,
-    height: 80,
+    height: 200,
     resizeMode: 'contain',
   },
   matchModal: {
