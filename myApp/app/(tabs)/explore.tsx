@@ -9,14 +9,69 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import { useState } from 'react';
+type Restaurant = {
+  id: string;
+  name: string;
+  image: string;
+  rating: number;
+  price: string;
+  location: string;
+  categories: string;
+};
+
+import { useEffect, useState } from 'react';
+import { getNearbyRestaurants } from '@/APIS/getRestaurants';
+import { useSaved } from '../context/SavedContext';
+import * as Location from 'expo-location';
+
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function ExploreScreen() {
   // Track bookmarks per card
+  const { toggleSave, savedRestaurants } = useSaved();
+  const [nearbyRestaurants, setNearbyRestaurants] = useState<Restaurant[]>([]);
+  const [openNowRestaurants, setOpenNowRestaurants] = useState<Restaurant[]>([]);
+  const [swipedRestaurantIds, setSwipedRestaurantIds] = useState<string[]>([]);
   const [bookmarkedNearby, setBookmarkedNearby] = useState([false, false, false, false, false]);
   const [bookmarkedOpenNow, setBookmarkedOpenNow] = useState([false, false, false, false]);
+  const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
+
+ useEffect(() => {
+  const fetchRestaurants = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.error('Location permission denied');
+      return;
+    }
+
+    const currentLocation = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    });
+
+    console.log('📍 Current Location:', currentLocation.coords);
+    setLocation(currentLocation.coords);
+
+    const allNearby: Restaurant[] = await getNearbyRestaurants(currentLocation.coords);
+
+    // Mock swiped IDs for now; replace with actual state later
+    const swipedRestaurantIds = ['bodega-san-fran', 'sotto-mare-sf']; 
+
+    const filteredNearby = allNearby
+      .filter(r => !swipedRestaurantIds.includes(r.id))
+      .slice(0, 8);
+
+    const openNow = allNearby
+      .filter(r => !swipedRestaurantIds.includes(r.id)) // Exclude swiped ones here too
+      .filter(r => r.name.toLowerCase().includes('open')) // Optional logic
+      .slice(0, 8);
+
+    setNearbyRestaurants(filteredNearby);
+    setOpenNowRestaurants(openNow);
+  };
+
+  fetchRestaurants();
+}, []);
 
   const toggleBookmark = (index: number, type: 'nearby' | 'open') => {
     if (type === 'nearby') {
@@ -73,34 +128,40 @@ export default function ExploreScreen() {
         {/* Nearby Section */}
         <View style={{ marginTop: 10 }}>
           <Text style={styles.sectionTitle}>Nearby</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-            {[1, 2, 3, 4, 5].map((_, idx) => (
-              <View style={styles.blankCard} key={idx}>
-                <View style={styles.blankImage}>
-                  <View style={styles.blankOverlay} />
-                  <TouchableOpacity
-                    style={styles.bookmarkWrapper}
-                    onPress={() => toggleBookmark(idx, 'nearby')}
-                  >
-                    <Image
-                      source={
-                        bookmarkedNearby[idx]
-                          ? require('@/assets/images/bookmark.png')
-                          : require('@/assets/images/unfillbookmark.png')
-                      }
-                      style={styles.bookmarkIcon}
-                    />
-                  </TouchableOpacity>
-                  <Text style={styles.cardTextTitle}>Name Here</Text>
-                  <Text style={styles.cardTextStatus}>● 5 miles away</Text>
+          <ScrollView horizontal>
+            {nearbyRestaurants.map((restaurant, idx) => (
+              <View style={styles.blankCard} key={restaurant.id}>
+                <Image source={{ uri: restaurant.image }} style={styles.vibeImage} />
+
+                {/* Dark overlay for text readability */}
+                <View style={styles.cardDarkOverlay} />
+
+                {/* Name overlay */}
+                <View style={styles.cardNameOverlay}>
+                  <Text style={styles.cardTextTitle}>{restaurant.name}</Text>
                 </View>
+
+                {/* Bookmark icon */}
+                <TouchableOpacity
+                  onPress={() => toggleSave(restaurant)}
+                  style={styles.bookmarkWrapper}
+                >
+                  <Image
+                    source={
+                      savedRestaurants.find(r => r.id === restaurant.id)
+                        ? require('@/assets/images/bookmark.png')
+                        : require('@/assets/images/unfillbookmark.png')
+                    }
+                    style={styles.bookmarkIcon}
+                  />
+                </TouchableOpacity>
               </View>
             ))}
           </ScrollView>
         </View>
 
         {/* Open Now Section */}
-        <View style={{ marginTop: 28 }}>
+        {/* <View style={{ marginTop: 28 }}>
           <Text style={styles.sectionTitle}>Open Now</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
             {[1, 2, 3, 4].map((_, idx) => (
@@ -126,7 +187,7 @@ export default function ExploreScreen() {
               </View>
             ))}
           </ScrollView>
-        </View>
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -139,7 +200,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: screenWidth * 0.04,
-    paddingBottom: 32,
+    paddingBottom: 64,
     paddingTop: screenHeight * 0.03,
     backgroundColor: '#fff',
   },
@@ -302,13 +363,29 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
   },
-  cardTextTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#fff',
-  },
   cardTextStatus: {
     fontSize: 12,
     color: '#fff',
   },
+  cardDarkOverlay: {
+  ...StyleSheet.absoluteFillObject,
+  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  borderRadius: 16,
+  zIndex: 1,
+},
+
+cardNameOverlay: {
+  position: 'absolute',
+  bottom: 12,
+  left: 12,
+  right: 12,
+  zIndex: 2,
+},
+
+cardTextTitle: {
+  fontSize: 14,
+  fontWeight: 'bold',
+  color: '#fff',
+}
+
 });

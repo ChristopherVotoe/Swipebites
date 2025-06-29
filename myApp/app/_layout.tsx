@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { SavedProvider } from '../app/context/SavedContext';
 import { useEffect, useState } from 'react';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -19,16 +20,18 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack
-        screenOptions={{ headerShown: false, animation: 'fade' }}
-        initialRouteName="index" // Always start at index
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(tabs)/mainPage"/>
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <SavedProvider> {/* ✅ Wrap everything inside here */}
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack
+          screenOptions={{ headerShown: false, animation: 'fade' }}
+          initialRouteName="index"
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(tabs)/mainPage" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </SavedProvider>
   );
 }
