@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, Modal, Pressable, TextInput } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, Modal, Pressable, TextInput, Alert } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { getNearbyRestaurants } from '@/APIS/getRestaurants';
-import type { LocationObjectCoords } from 'expo-location';
+import * as Location from 'expo-location'; 
 import { useRouter } from 'expo-router';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -15,19 +15,18 @@ export default function SwipeScreen() {
   const [chatInput, setChatInput] = useState('');
   const router = useRouter();
 
-  const mockCoords: LocationObjectCoords = {
-    latitude: 28.6024,
-    longitude: -81.2001,
-    altitude: null,
-    accuracy: null,
-    altitudeAccuracy: null,
-    heading: null,
-    speed: null,
-  };
-
   useEffect(() => {
     const fetchRestaurants = async () => {
-      const data = await getNearbyRestaurants(mockCoords);
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission denied', 'Location permission is required to show nearby restaurants.');
+        return;
+      }
+      // Get location
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = location.coords;
+      const data = await getNearbyRestaurants(coords);
       setCards(data);
     };
     fetchRestaurants();
